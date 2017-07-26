@@ -120,9 +120,15 @@ namespace NUnit.ConsoleRunner
 
             // We display the filters at this point so  that any exception message
             // thrown by CreateTestFilter will be understandable.
-            DisplayTestFilters();
-
+            // DisplayTestFilters();
+            if (_options.Split.Length > 2)
+            {
+                TestPackage prepPackage = MakeTestPackage(_options);
+                TestFilter prepfilter = CreateTestFilter(_options);
+                ((List<string>)(_options.TestList)).AddRange(TestNameParser.Parse(SplitTests(prepPackage, prepfilter)));
+            }
             TestFilter filter = CreateTestFilter(_options);
+            DisplayTestFilters();
 
             if (_options.Explore)
                 return ExploreTests(package, filter);
@@ -163,6 +169,38 @@ namespace NUnit.ConsoleRunner
             }
 
             return ConsoleRunner.OK;
+        }
+
+        private String SplitTests(TestPackage package, TestFilter filter)
+        {
+            XmlNode result;
+            int hashedTestFixture = 0, numOfSplits, currentSplit;
+            string splitTests = "";
+
+            using (var runner = _engine.GetRunner(package))
+                result = runner.Explore(filter);
+
+            int count1 = 0, count2 = 0;
+
+            int.TryParse(_options.Split[0], out numOfSplits);
+            int.TryParse(_options.Split[2], out currentSplit);
+
+            foreach (XmlNode node in result.SelectNodes("//test-case"))
+            {
+
+                count1++;
+                hashedTestFixture = (node.Attributes["classname"].Value).GetHashCode();
+                if (hashedTestFixture < 1)
+                    hashedTestFixture = hashedTestFixture * -1;
+
+                if ((hashedTestFixture % numOfSplits) == currentSplit - 1)
+                {
+                    count2++;
+                    splitTests += node.Attributes["fullname"].Value + ", ";
+                }
+            }
+            Console.WriteLine(count1 + "***********" + count2);
+            return splitTests;
         }
 
         private int RunTests(TestPackage package, TestFilter filter)

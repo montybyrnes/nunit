@@ -84,7 +84,7 @@ namespace NUnit.Common
                         break;
 
                     case '"':
-                        while (++index < argument.Length && argument[index] != '"')
+                        while (++index < argument.Length && argument[index] != '"' || argument[index - 1] == '\\')
                             ;
                         break;
 

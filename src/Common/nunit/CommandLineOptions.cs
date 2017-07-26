@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using NUnit.Options;
+using System.Text.RegularExpressions;
 
 namespace NUnit.Common
 {
@@ -73,6 +74,9 @@ namespace NUnit.Common
         // Action to Perform
 
         public bool Explore { get; private set; }
+
+        private string[] splitInfo = { };
+        public string[] Split { get { return splitInfo; } }
 
         public bool ShowHelp { get; private set; }
 
@@ -258,6 +262,17 @@ namespace NUnit.Common
         {
             // NOTE: The order in which patterns are added
             // determines the display order for the help.
+
+            this.Add("split=", "Number of splits required and current split to run, dash seperated (Max two digits). {NUMBER_SPLITS}-{CURRENT_SPLIT}",
+                v => {
+                    var paramFormat = new Regex("^[\\d]*-[\\d]*$");
+                    string split = RequiredValue(v, "--split");
+                    string splitPattern = "(-)";
+                    splitInfo = Regex.Split(split, splitPattern);
+
+                    if (!paramFormat.IsMatch(split) || !(int.Parse(splitInfo[2]) <= int.Parse(splitInfo[0])))
+                        ErrorMessages.Add("split option is in the incorrect format, use split={NUMBER_SPLITS}-{CURRENT_SPLIT} ie split=2-1 (Max two digits)");
+                });
 
             // Select Tests
             this.Add("test=", "Comma-separated list of {NAMES} of tests to run or explore. This option may be repeated.",
