@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using NUnit.Options;
+using System.Text.RegularExpressions;
 
 namespace NUnit.Common
 {
@@ -90,6 +91,9 @@ namespace NUnit.Common
 
         public string WhereClause { get; private set; }
         public bool WhereClauseSpecified { get { return WhereClause != null; } }
+
+        public string SplitClause { get; private set; }
+        public bool SplitClauseSpecified { get { return SplitClause != null; } }
 
         private int defaultTimeout = -1;
         public int DefaultTimeout { get { return defaultTimeout; } }
@@ -297,6 +301,17 @@ namespace NUnit.Common
 #endif
             this.Add("where=", "Test selection {EXPRESSION} indicating what tests will be run. See description below.",
                 v => WhereClause = RequiredValue(v, "--where"));
+
+            this.Add("split=", "Number of splits required and current split to run, dash seperated (Max two digits). {NUMBER_SPLITS}-{CURRENT_SPLIT}",
+                v => {
+                    var paramFormat = new Regex("^[\\d]*-[\\d]*$");
+                    SplitClause = RequiredValue(v, "--split");
+                    string splitPattern = "(-)";
+                    string[] splitInfo = Regex.Split(SplitClause, splitPattern);
+
+                    if (!paramFormat.IsMatch(SplitClause) || !(int.Parse(splitInfo[2]) <= int.Parse(splitInfo[0])) || (int.Parse(splitInfo[2]) == 0))
+                        ErrorMessages.Add("split option is in the incorrect format, use split={NUMBER_SPLITS}-{CURRENT_SPLIT} ie split=2-1 (Max two digits)");
+                });
 
             this.Add("params|p=", "Define a test parameter.",
                 v =>

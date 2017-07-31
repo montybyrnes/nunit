@@ -298,7 +298,7 @@ namespace NUnit.ConsoleRunner
 
         private void DisplayTestFilters()
         {
-            if (_options.TestList.Count > 0 || _options.WhereClauseSpecified)
+            if (_options.TestList.Count > 0 || _options.WhereClauseSpecified || _options.SplitClauseSpecified)
             {
                 _outWriter.WriteLine(ColorStyle.SectionHeader, "Test Filters");
 
@@ -308,6 +308,9 @@ namespace NUnit.ConsoleRunner
 
                 if (_options.WhereClauseSpecified)
                     _outWriter.WriteLabelLine("    Where: ", _options.WhereClause.Trim());
+
+                if (_options.SplitClauseSpecified)
+                    _outWriter.WriteLabelLine("    Split: ", _options.SplitClause.Trim());
 
                 _outWriter.WriteLine();
             }
@@ -437,6 +440,9 @@ namespace NUnit.ConsoleRunner
 
             if (options.WhereClauseSpecified)
                 builder.SelectWhere(options.WhereClause);
+
+            if (options.SplitClauseSpecified)
+                builder.SelectSplit(options.SplitClause);
 
             return builder.GetFilter();
         }

@@ -149,7 +149,6 @@ namespace NUnit.Framework.Internal
         public static TestFilter FromXml(TNode node)
         {
             bool isRegex = node.Attributes["re"] == "1";
-
             switch (node.Name)
             {
                 case "filter":
@@ -167,6 +166,9 @@ namespace NUnit.Framework.Internal
 
                 case "not":
                     return new NotFilter(FromXml(node.FirstChild));
+
+                case "split":
+                    return new SplitFilter(node.Value);
 
                 case "id":
                     return new IdFilter(node.Value); 

@@ -41,6 +41,12 @@ namespace NUnit.Engine
         void SelectWhere(string whereClause);
 
         /// <summary>
+        /// Specify what is to be included by the filter using a split clause.
+        /// </summary>
+        /// <param name="splitClause">A split clause that will be parsed by NUnit to create the filter.</param>
+        void SelectSplit(string splitClause);
+
+        /// <summary>
         /// Get a TestFilter constructed according to the criteria specified by the other calls.
         /// </summary>
         /// <returns>A TestFilter.</returns>

@@ -35,6 +35,7 @@ namespace NUnit.Engine
     {
         private List<string> _testList = new List<string>();
         private string _whereClause;
+        private string _splitClause;
 
         /// <summary>
         /// Add a test to be selected
@@ -55,12 +56,24 @@ namespace NUnit.Engine
         }
 
         /// <summary>
+        /// Specify what is to be included by the filter using a split clause.
+        /// </summary>
+        /// <param name="splitClause">A split clause that will be parsed by NUnit to create the filter.</param>
+        public void SelectSplit(string splitClause)
+        {
+            _splitClause = splitClause;
+        }
+
+        /// <summary>
         /// Get a TestFilter constructed according to the criteria specified by the other calls.
         /// </summary>
         /// <returns>A TestFilter.</returns>
         public TestFilter GetFilter()
         {
             var filter = new StringBuilder("<filter>");
+
+            if (_splitClause != null)
+                filter.Append("<split>" + _splitClause + "</split>");
 
             if (_testList.Count > 0)
             {
@@ -71,7 +84,6 @@ namespace NUnit.Engine
                 if (_testList.Count > 1)
                     filter.Append("</or>");
             }
-
 
             if (_whereClause != null)
                 filter.Append(new TestSelectionParser().Parse(_whereClause));
