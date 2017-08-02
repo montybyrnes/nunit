@@ -152,6 +152,7 @@
     <Compile Include="Internal\Execution\EventListenerTextWriter.cs" />
     <Compile Include="Internal\Filters\CompositeFilter.cs" />
     <Compile Include="Internal\Filters\PropertyFilter.cs" />
+    <Compile Include="Internal\Filters\SplitFilter.cs" />
     <Compile Include="Internal\Filters\TestNameFilter.cs" />
     <Compile Include="Internal\Filters\ClassNameFilter.cs" />
     <Compile Include="Internal\Filters\MethodNameFilter.cs" />
